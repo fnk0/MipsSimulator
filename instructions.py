@@ -6,3 +6,6 @@ class Add(Instruction):
 
     def evaluate(self):
         self.saveReg = self.val1 + self.val2
+
+class Addi(Add):
+    pass

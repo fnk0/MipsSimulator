@@ -7,10 +7,10 @@ class Memory(object):
         self.mem = [0] * (2**20)
 
     def getValInAddress(self, address):
-        return self.mem[address]
+        return self.mem[address / 4]
 
     def setValToAddress(self, val, address):
-        self.mem[address] = val
+        self.mem[address / 4] = val
 
 
 class Registers(object):

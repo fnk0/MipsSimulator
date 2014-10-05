@@ -1,0 +1,27 @@
+[7ffffe5c]    00000000                                  . . . .
+[7ffffe60]    00000000  7fffffdd  7fffffa4  7fffff94    . . . . . . . . . . . . . . . .
+[7ffffe70]    7fffff81  7fffff75  7fffff66  7fffff3b    . . . . u . . . f . . . ; . . .
+[7ffffe80]    7fffff06  7ffffed2  7ffffebe  7ffffe9c    . . . . . . . . . . . . . . . .
+[7ffffe90]    00000000  00000000  00000000  46435f5f    . . . . . . . . . . . . _ _ C F
+[7ffffea0]    4553555f  45545f52  455f5458  444f434e    _ U S E R _ T E X T _ E N C O D
+[7ffffeb0]    3d474e49  46317830  3a303a35  5f5f0030    I N G = 0 x 1 F 5 : 0 : 0 . _ _
+[7ffffec0]    43454843  5849464b  36333431  3d343339    C H E C K F I X 1 4 3 6 9 3 4 =
+[7ffffed0]    49440031  414c5053  742f3d59  6c2f706d    1 . D I S P L A Y = / t m p / l
+[7ffffee0]    636e7561  48632d68  58535258  67726f2f    a u n c h - c H X R S X / o r g
+[7ffffef0]    63616d2e  6f66736f  2e656772  61757178    . m a c o s f o r g e . x q u a
+[7fffff00]    3a7a7472  70410030  5f656c70  53627550    r t z : 0 . A p p l e _ P u b S
+[7fffff10]    535f6275  656b636f  65525f74  7265646e    u b _ S o c k e t _ R e n d e r
+[7fffff20]    6d742f3d  616c2f70  68636e75  4368632d    = / t m p / l a u n c h - c h C
+[7fffff30]    2f494257  646e6552  53007265  415f4853    W B I / R e n d e r . S S H _ A
+[7fffff40]    5f485455  4b434f53  6d742f3d  616c2f70    U T H _ S O C K = / t m p / l a
+[7fffff50]    68636e75  4773482d  2f775032  7473694c    u n c h - H s G 2 P w / L i s t
+[7fffff60]    72656e65  4f4c0073  4d414e47  616d3d45    e n e r s . L O G N A M E = m a
+[7fffff70]    73756372  45535500  616d3d52  73756372    r c u s . U S E R = m a r c u s
+[7fffff80]    4d4f4800  552f3d45  73726573  72616d2f    . H O M E = / U s e r s / m a r
+[7fffff90]    00737563  4c454853  622f3d4c  622f6e69    c u s . S H E L L = / b i n / b
+[7fffffa0]    00687361  44504d54  2f3d5249  2f726176    a s h . T M P D I R = / v a r /
+[7fffffb0]    646c6f66  2f737265  302f7331  77777866    f o l d e r s / 1 s / 0 f x w w
+[7fffffc0]    3539646d  64347177  6c326363  68386d6b    m d 9 5 w q 4 d c c 2 l k m 8 h
+[7fffffd0]    30773764  67303030  2f542f6e  54415000    d 7 w 0 0 0 0 g n / T / . P A T
+[7fffffe0]    752f3d48  622f7273  2f3a6e69  3a6e6962    H = / u s r / b i n : / b i n :
+[7ffffff0]    7273752f  6962732f  732f3a6e  006e6962    / u s r / s b i n : / s b i n .
