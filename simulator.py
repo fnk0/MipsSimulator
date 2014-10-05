@@ -30,22 +30,22 @@ def main():
     process(inputFile)
 
 def process(file):
-
     mem = Memory()
-    print len(mem.mem)
-    for line in file:
-        addr = line[0].translate(None, "[]")
-        iterLines = iter(line)
-        next(iterLines)
-        for s in iterLines:
-            val = ""
-            try:
-                x = int(s, 16)
-                val += s
-            except ValueError:
-                break
+    # print len(mem.mem) # debug Only check the size of the array
 
-        print int(addr, 16) / 4
-        mem.setValToAddress(val, int(addr, 16))
+    for line in file:
+        addr = line[0].translate(None, "[]") # get the memory address on the first value of the input file
+        iterLines = iter(line) # make a iterator over the array
+        next(iterLines) # skip the first element
+        val = "" # set the initial value to nothing
+        for s in iterLines: # iterate over each string of the line
+            try:
+                x = int(s, 16) # check if the value is a hex string
+                val += s.decode("hex") # Decode the string and add it to val
+            except ValueError:
+                break # break the loop if the value is no longer a hex string
+
+        print int(addr, 16) / 4 # debugging. Prints the address
+        mem.setValToAddress(val, int(addr, 16)) # sets the value to the specific address
 
 main()
