@@ -23,7 +23,7 @@ def process(file):
         for s in iterLines: # iterate over each string of the line
             try:
                 x = int(s, 16) # check if the value is a hex string
-                val += s.decode("hex") # Decode the string and add it to val
+                val = x
             except ValueError:
                 break # break the loop if the value is no longer a hex string
 
