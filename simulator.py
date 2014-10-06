@@ -10,24 +10,6 @@ def usage():
     print "Usage: simulator [mode] [input]"
     print "Modes available: -d (debug), -n (normal)"
 
-def main():
-    inputFile = []
-
-    if len(sys.argv) != 3:
-        print usage()
-    else:
-        lines = [line.rstrip() for line in open(sys.argv[2])]
-        for l in lines:
-            line = l.split(" ")
-            arr = []
-            for i in line:
-                if i != '':
-                    arr.append(i)
-            inputFile.append(arr)
-
-    #for l in inputFile:
-    #    print l
-    process(inputFile)
 
 def process(file):
     mem = Memory()
@@ -48,4 +30,21 @@ def process(file):
         print int(addr, 16) / 4 # debugging. Prints the address
         mem.setValToAddress(val, int(addr, 16)) # sets the value to the specific address
 
-main()
+if __name__ == "__main__":
+    inputFile = []
+
+    if len(sys.argv) != 3:
+        print usage()
+    else:
+        lines = [line.rstrip() for line in open(sys.argv[2])]
+        for l in lines:
+            line = l.split(" ")
+            arr = []
+            for i in line:
+                if i != '':
+                    arr.append(i)
+            inputFile.append(arr)
+
+    for l in inputFile:
+        print l
+    #process(inputFile)

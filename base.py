@@ -4,7 +4,7 @@ __author__ = 'marcus'
 class Memory(object):
 
     def __init__(self):
-        self.mem = [0] * (2**20)
+        self.mem = [0] * (2**25)
 
     def getValInAddress(self, address):
         return self.mem[address / 4]
