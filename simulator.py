@@ -4,6 +4,7 @@ __author__ = 'marcus'
 import sys
 import string
 from base import Memory
+from instructions import Sub
 
 def usage():
     print "Welcome to Mips Simulator by Marcus Gabilheri"
@@ -47,4 +48,4 @@ if __name__ == "__main__":
 
     for l in inputFile:
         print l
-    #process(inputFile)
+    process(inputFile)

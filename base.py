@@ -1,17 +1,5 @@
 __author__ = 'marcus'
 
-class Memory(object):
-
-    def __init__(self):
-        self.mem = [0] * (2**20)
-
-    def getValInAddress(self, address):
-        return self.mem[address / 4]
-
-    def setValToAddress(self, val, address):
-        self.mem[address / 4] = val
-
-
 class Registers(object):
 
     def __init__(self):
@@ -27,13 +15,39 @@ class Registers(object):
     def setValueForRegister(self, val, num):
         self.generalPurposes[num] = val
 
+    def advancePC(self):
+        self.PC += 4
+        print str(self.PC)
+
+    def decreasePC(self):
+        self.PC -= 4
+
+class Memory(object):
+
+    reg = Registers()
+
+    def __init__(self):
+        self.mem = [0] * (2**20)
+
+    def getValInAddress(self, address):
+        return self.mem[address / 4]
+
+    def setValToAddress(self, val, address):
+        self.mem[address / 4] = val
+
+    def getRegisters(self):
+        return self.reg
+
 
 class Instruction(object):
 
-    def __init__(self, saveReg, val1, val2):
+    mem = Memory()
+
+    def __init__(self, saveReg, val1, val2, mem):
         self.saveReg = saveReg
         self.val1 = val1
         self.val2 = val2
+        self.mem = mem
 
     def evaluate(self):
         """
@@ -42,3 +56,6 @@ class Instruction(object):
         :return:
         """
         pass
+
+    def getMemory(self):
+        return self.mem
