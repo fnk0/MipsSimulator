@@ -1,0 +1,66 @@
+# FizzBuzz program
+
+# Start Registers
+[PC]            0x00000000    # Start position
+[R29]           0x000ffff0    # Initial Stack pointer
+
+[0x00000000]	0x8fa40000  lw $4, 0($29)                   ; 183: lw $a0 0($sp)		# argc
+[0x00000004]	0x27a50004  addiu $5, $29, 4                ; 184: addiu $a1 $sp 4		# argv
+[0x00000008]	0x24a60004  addiu $6, $5, 4                 ; 185: addiu $a2 $a1 4		# envp
+[0x0000000c]	0x00041080  sll $2, $4, 2                   ; 186: sll $v0 $a0 2
+[0x00000010]	0x00c23021  addu $6, $6, $2                 ; 187: addu $a2 $a2 $v0
+[0x00000014]	0x0c000009  jal 0x00400024 [main]           ; 188: jal main
+[0x00000018]	0x00000000  nop                             ; 189: nop
+[0x0000001c]	0x3402000a  ori $2, $0, 10                  ; 191: li $v0 10
+[0x00000020]	0x0000000c  syscall                         ; 192: syscall			# syscall 10 (exit)
+
+# Main
+[0x00000024]	0x34020004  ori $2, $0, 4                   ; 44: li $v0, 4       		# syscall 4
+[0x00000028]	0x3c040001  lui $4, 4097 [prompt]           ; 45: la $a0, prompt  		# argument: string
+[0x0000002c]	0x0000000c  syscall                         ; 46: syscall         		# print the string
+[0x00000030]	0x34020005  ori $2, $0, 5                   ; 49: li $v0, 5
+[0x00000034]	0x0000000c  syscall                         ; 50: syscall
+[0x00000038]	0x00024821  addu $9, $0, $2                 ; 51: move $t1, $v0
+[0x0000003c]	0x34080001  ori $8, $0, 1                   ; 53: li $t0, 1				# $t0 = 1;
+[0x00000040]	0x0128082a  slt $1, $9, $8                  ; 56: bgt $t0, $t1 afterLoop	# while ($t0 <= $t1) {
+[0x00000044]	0x14200021  bne $1, $0, 132 [afterLoop-0x00400044]
+[0x00000048]	0x00000000  nop                             ; 57: nop
+[0x0000004c]	0x340c0003  ori $12, $0, 3                  ; 60: li $t4, 3
+[0x00000050]	0x010c001a  div $8, $12                     ; 61: div $t0, $t4
+[0x00000054]	0x00005010  mfhi $10                        ; 62: mfhi $t2
+[0x00000058]	0x340c0005  ori $12, $0, 5                  ; 65: li $t4, 5
+[0x0000005c]	0x010c001a  div $8, $12                     ; 66: div $t0, $t4
+[0x00000060]	0x00005810  mfhi $11                        ; 67: mfhi $t3
+[0x00000064]	0x15400005  bne $10, $0, 20 [afterIf1-0x00400064]; 70: bnez $t2, afterIf1
+[0x00000068]	0x00000000  nop                             ; 71: nop
+[0x0000006c]	0x34020004  ori $2, $0, 4                   ; 72: li $v0, 4
+[0x00000070]	0x3c010001  lui $1, 4097 [fizz]             ; 73: la $a0, fizz
+[0x00000074]	0x34240023  ori $4, $1, 35 [fizz]
+[0x00000078]	0x0000000c  syscall                         ; 74: syscall
+[0x0000007c]	0x15600005  bne $11, $0, 20 [afterIf2-0x0040007c]; 78: bnez $t3, afterIf2
+[0x00000080]	0x00000000  nop                             ; 79: nop
+[0x00000084]	0x34020004  ori $2, $0, 4                   ; 80: li $v0, 4
+[0x00000088]	0x3c010001  lui $1, 4097 [buzz]             ; 81: la $a0, buzz
+[0x0000008c]	0x34240029  ori $4, $1, 41 [buzz]
+[0x00000090]	0x0000000c  syscall                         ; 82: syscall
+[0x00000094]	0x11400006  beq $10, $0, 24 [afterIf3-0x00400094]; 86: beq $t2, $zero, afterIf3
+[0x00000098]	0x00000000  nop                             ; 87: nop
+[0x0000009c]	0x11600004  beq $11, $0, 16 [afterIf3-0x0040009c]; 89: beq $t3, $zero, afterIf3
+[0x000000a0]	0x00000000  nop                             ; 90: nop
+[0x000000a4]	0x34020001  ori $2, $0, 1                   ; 91: li $v0, 1
+[0x000000a8]	0x00082021  addu $4, $0, $8                 ; 92: move $a0, $t0
+[0x000000ac]	0x0000000c  syscall                         ; 93: syscall
+[0x000000b0]	0x34020004  ori $2, $0, 4                   ; 97: li $v0, 4
+[0x000000b4]	0x3c010001  lui $1, 4097 [newline]          ; 98: la $a0, newline
+[0x000000b8]	0x3424002e  ori $4, $1, 46 [newline]
+[0x000000bc]	0x0000000c  syscall                         ; 99: syscall
+[0x000000c0]	0x25080001  addiu $8, $8, 1                 ; 100: addiu $t0, $t0, 1
+[0x000000c4]	0x08000010  j 0x00400040 [loop]             ; 101: j loop
+[0x000000c8]	0x00000000  nop                             ; 102: nop
+[0x000000cc]	0x03e00008  jr $31                          ; 105: jr $ra          # return to caller
+[0x000000d0]	0x00000000  nop                             ; 106: nop
+
+# data segment
+[0x00010000]		        0x7a7a6946  0x7a754220  0x7270207a  0x6172676f
+[0x00010010]		        0x6e450a6d  0x20726574  0x756e2061  0x7265626d
+[0x00010020]		        0x4600203a  0x207a7a69  0x7a754200  0x000a007a

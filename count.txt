@@ -1,0 +1,38 @@
+# Hello World with startup code.  At startup, main
+# is called, and the program exits when it returns.
+
+# Start Registers
+[PC]            0x00000000    # Start position
+[R29]           0x000ffff0    # Initial Stack pointer
+
+# Startup Code
+[0x00000000]	0x8fa40000  lw $4, 0($29)                   ; 183: lw $a0 0($sp)		# argc
+[0x00000004]	0x27a50004  addiu $5, $29, 4                ; 184: addiu $a1 $sp 4		# argv
+[0x00000008]	0x24a60004  addiu $6, $5, 4                 ; 185: addiu $a2 $a1 4		# envp
+[0x0000000c]	0x00041080  sll $2, $4, 2                   ; 186: sll $v0 $a0 2
+[0x00000010]	0x00c23021  addu $6, $6, $2                 ; 187: addu $a2 $a2 $v0
+[0x00000014]	0x0c000009  jal 0x00000024 [main]           ; 188: jal main
+[0x00000018]	0x00000000  nop                             ; 189: nop
+[0x0000001c]	0x3402000a  ori $2, $0, 10                  ; 191: li $v0 10
+[0x00000020]	0x0000000c  syscall                         ; 192: syscall			# syscall 10 (exit)
+
+# Main
+[0x00000024]	0x34020004  ori $2, $0, 4                   ; 9: li $v0, 4       # syscall 4 (print_str)
+[0x00000028]	0x34047000  ori $4, $0, 0x7000              ;   : li $4, 0x7000
+[0x0000002c]	0x0000000c  syscall                         ; 11: syscall         # print the string
+[0x00000030]	0x34080001  ori $8, $0, 1                   ; 13: li $t0, 1
+[0x00000034]	0x3409000b  ori $9, $0, 11                  ; 14: li $t1, 11
+[0x00000038]	0x11090009  beq $8, $9, 40 [afterLoop-0x00400038]; 15: beq $t0, $t1 afterLoop
+[0x0000003c]	0x34020001  ori $2, $0, 1                   ; 16: li $v0, 1
+[0x00000040]	0x01002021  add $4, $8, $0                  ; 17: add $a0, $t0, $zero
+[0x00000044]	0x0000000c  syscall                         ; 18: syscall         # print the number
+[0x00000048]	0x34020004  ori $2, $0, 4                   ; 20: li $v0, 4       # syscall 4 (print_str)
+[0x0000004c]	0x00000000  nop
+[0x00000050]	0x3404700d  ori $4, $0, 0x70fd
+[0x00000054]	0x0000000c  syscall                         ; 22: syscall
+[0x00000058]	0x0800000e  j 0x00400038 [loop]             ; 25: j loop
+[0x0000005c]	0x25080001  addi $8, $8, 1                  ; 24: addi $t0, $t0, 1
+[0x00000060]	0x03e00008  jr $31                          ; 27: jr $ra          # retrun to caller
+
+# Data
+[0x00007000]		        0x6e756f43  0x6f742074  0x0a303120  0x00000a00
