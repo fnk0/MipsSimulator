@@ -11,5 +11,13 @@ Mips simulator for computer systems class
 
 ###### Grab a instruction word
 ```python
+# int
 instruction = memArray[pc >> 2] # shifts by 2 or divide by 4 
+
+#int 
+op = (instruction >> 26) & 0b7F # Takes the high order 6 bits
+
+#int
+sRegister = (instruction >> 21) & 0b1F
+
 ```
