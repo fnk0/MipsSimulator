@@ -1,0 +1,16 @@
+# Hello World program without the startup code
+
+# Start Registers
+[PC]            0x00000000    # Start position
+[R29]           0x000ffff0    # Initial Stack pointer
+
+# code
+[0x00000000]	0x34020004  ori $2, $0, 4
+[0x00000004]	0x34047000  ori $4, $0, 0x7000
+[0x00000008]	0x0000000c  syscall
+[0x0000000c]	0x3402000a  ori $2, $0, 10
+[0x00000010]	0x0000000c  syscall
+
+# data segment
+# msg:   .asciiz "Hello World"
+[0x00007000]	0x6c6c6548  0x6f57206f  0x00646c72  0x00000000

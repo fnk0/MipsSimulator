@@ -2,6 +2,7 @@ __author__ = 'marcus'
 
 class Registers(object):
 
+
     def __init__(self):
         self.generalPurposes = [0] * 31
         self.PC = 0
@@ -14,6 +15,9 @@ class Registers(object):
 
     def setValueForRegister(self, val, num):
         self.generalPurposes[num] = val
+
+    def setInitialPC(self, val):
+        self.pc = val
 
     def advancePC(self):
         self.PC += 4
@@ -37,6 +41,14 @@ class Memory(object):
 
     def getRegisters(self):
         return self.reg
+
+    def getRegisterNum(self, reg):
+        # print "Register Number! " + reg[1:len(reg)]
+        return int(reg[1:len(reg)])
+
+    def printMemory(self):
+        for x in self.mem:
+            if x is not 0: print x
 
 
 class Instruction(object):
