@@ -15,9 +15,9 @@ Mips simulator for computer systems class
 instruction = memArray[pc >> 2] # shifts by 2 or divide by 4 
 
 #int 
-op = (instruction >> 26) & 0b7F # Takes the high order 6 bits
+op = (instruction >> 26) & 0x7F # Takes the high order 6 bits
 
 #int
-sRegister = (instruction >> 21) & 0b1F
+sRegister = (instruction >> 21) & 0x1F
 
 ```
