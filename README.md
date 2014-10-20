@@ -24,11 +24,11 @@ if instruction & SLL_MASK == SLL_OP # Another way of checking which instruction 
 
 switch(op):
     ins = Instruction()
-    if op == ADD:
+    op == ADD:
         ins = Add()
     ...
     
-    ins.execute()
+ins.execute()
    
 ```
 
@@ -42,3 +42,17 @@ Add Mask: 0000 00ss ssst tttt dddd d000 0010 0000
           1111 1100 0000 0000 0000 0111 1111 1111
             
 Write a routine that gets a String and converts it to hex
+
+
+### Mips Instructions:
+
+| Instruction Type | Encoding Example                        | Mask                                    |
+| ---              | ---                                     | ---                                     |
+| Register         | 0000 00ss ssst tttt dddd d000 0010 0000 | 1111 1100 0000 0000 0000 0111 1111 1111 |
+| Immediate        | 0010 00ss ssst tttt iiii iiii iiii iiii | 1111 1100 0000 0000 0000 0000 0000 0000 |
+| Jump / Branch    | 0000 01ss sss0 0000 iiii iiii iiii iiii | 1111 1100 0001 1111 0000 0000 0000 0000 |
+
+
+add: 0000 0000 0000 0000 0000 0000 0010 0000
+addi: 0010 0000 0000 0000 0000 0000 0000 0000
+addiu: 0010 0100 0000 0000 0000 0000 0000 0000

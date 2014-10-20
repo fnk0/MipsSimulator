@@ -41,3 +41,5 @@ if __name__ == "__main__":
     #    print l
     fProcess.process(inputFile)
     mem.printMemory()
+    print mem.getValInAddress(0x00007000)
+

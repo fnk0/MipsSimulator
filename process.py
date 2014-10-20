@@ -40,16 +40,21 @@ class FileProcess(object):
             addr = self.getRealAddress(location)
             iterLines = iter(line) # make a iterator over the array
             next(iterLines) # skip the first element
+            counter = 0
             for s in iterLines: # iterate over each string of the line
                 try:
+                    address = addr[0] + counter
+                    counter += 4
                     val = int(s, 16) # check if the value is a hex string
                     # print val
                     if addr[1] == self.IS_MEM:
-                        self.mem.setValToAddress(val, addr[0])
+                        self.mem.setValToAddress(val, address)
+                        # print "Addr: " + str(address)
+                        # print "Addr Val: " + str(self.mem.mem[address >> 4])
                     elif addr[1] == self.IS_PC:
                         self.mem.getRegisters().setInitialPC(val)
                     elif addr[1] == self.IS_REG:
-                        self.mem.getRegisters().setValueForRegister(val, addr[0])
+                        self.mem.getRegisters().setValueForRegister(val, address)
                     else:
                         continue
 

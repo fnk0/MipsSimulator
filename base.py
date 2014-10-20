@@ -2,7 +2,6 @@ __author__ = 'marcus'
 
 class Registers(object):
 
-
     def __init__(self):
         self.generalPurposes = [0] * 31
         self.PC = 0
@@ -34,16 +33,16 @@ class Memory(object):
         self.mem = [0] * (2**20)
 
     def getValInAddress(self, address):
-        return self.mem[address / 4]
+        return self.mem[address >> 2]
 
     def setValToAddress(self, val, address):
-        self.mem[address / 4] = val
+        self.mem[address >> 2] = val
 
     def getRegisters(self):
         return self.reg
 
     def getRegisterNum(self, reg):
-        # print "Register Number! " + reg[1:len(reg)]
+        #print "Register Number! " + reg[1:len(reg)]
         return int(reg[1:len(reg)])
 
     def printMemory(self):
