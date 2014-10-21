@@ -4,8 +4,8 @@ __author__ = 'marcus'
 import sys, re
 import string
 from base import Memory
-from instructions import Sub
 from process import FileProcess
+from instructions import Instruction
 
 
 def usage():
@@ -15,7 +15,6 @@ def usage():
 
 if __name__ == "__main__":
     inputFile = []
-
     mem = Memory()
 
     fProcess = FileProcess(mem)
@@ -40,6 +39,9 @@ if __name__ == "__main__":
     #for l in inputFile:
     #    print l
     fProcess.process(inputFile)
-    mem.printMemory()
-    print mem.getValInAddress(0x00007000)
+    ins = Instruction(mem, mem.getRegisters())
 
+    for x in mem.mem:
+        if x is not 0:
+            #print x
+            print ins.evaluate(x)

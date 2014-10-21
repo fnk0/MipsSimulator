@@ -19,10 +19,12 @@ class Registers(object):
         self.PC = val
 
     def advancePC(self, val = 4):
-        self.PC += val
+        self.PC = self.nPC
+        self.nPC += val
 
     def decreasePC(self, val = 4):
-        self.PC -= val
+        self.PC = self.nPC
+        self.nPC -= val
 
 class Memory(object):
 

@@ -1,46 +1,35 @@
 __author__ = 'marcus'
 
 from base import Memory, Registers
+from address_reading import ReadAddress
 
 class Instruction(object):
 
-    mem = Memory()
-    regs = Registers()
+    rA = ReadAddress()
 
     def __init__(self, regs, mem):
         self.regs = regs
         self.mem = mem
 
-    def evaluate(self, fun, *args):
-        """
-        The evaluate method will evaluate the instruction and save it
-        to the specified saveReg
-        args[0] = Register to be saved
-        args[1] = word 1
-        args[2] = word 3
-        ... etc..
-        :return:
-        """
-        return fun(args)
+    def evaluate(self, num):
+        try:
+            return self.instructions[self.rA.applyMaskRegister(num)]
+        except:
+            pass
+        try:
+            #return (test[y][0](test[y][1](z)))
+            return self.instructions[self.rA.applyMaskJump(num)]
+        except:
+            pass
+        try:
+            return self.instructions[self.rA.applyMaskImmediate(num)]
+        except:
+            return
 
     def getMemory(self):
         return self.mem
 
-    def applyMaskRegister(self, num):
-        mask = num & 0b11111100000000000000011111111111
-        d_word = (num >> 11) & 0x3F
-        print d_word
-        return mask
-
-    def applyMaskImmediate(self, num):
-        mask = num & 0b11111100000000000000000000000000
-        return mask
-
-    def applyMaskJump(self, num):
-        mask = num & 0b1111110000011111000000000000
-        return mask
-
-    def _add(self, args = []):
+    def _add(self, args = []): #$d = $s + $t; advance_pc (4);
         self.regs.generalPurposes[args[0]] = args[1] + args[2]
         self.regs.advancePC()
 
@@ -66,7 +55,11 @@ class Instruction(object):
         self.regs.advancePC(args[1] << 2) if args[0] >= args[1] else self.regs.advancePC()
 
     def _bgezal(self, args = []): #if $s >= 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.generalPurposes[31] = self.regs.PC + 8 if args[1] >= 0 else self.regs.advancePC()
+        if args[0] >= 0:
+            self.regs.setValueForRegister(31, self.regs.PC + 8)
+            self.regs.advancePC(args[1] << 2)
+        else:
+            self.regs.advancePC()
 
     def _bgtz(self, args = []): #if $s > 0 advance_pc (offset << 2)); else advance_pc (4);
         self.regs.advancePC(args[1] << 2) if args[0] > 0 else self.regs.advancePC()
@@ -74,10 +67,10 @@ class Instruction(object):
     def _blez(self, args = []): #if $s <= 0 advance_pc (offset << 2)); else advance_pc (4)
         self.regs.advancePC(args[1] << 2) if args[0] <= 0 else self.regs.advancePC()
 
-    def _bltz(self, args = []):     #if $s < 0 advance_pc (offset << 2)); else advance_pc (4);
+    def _bltz(self, args = []): #if $s < 0 advance_pc (offset << 2)); else advance_pc (4);
         self.regs.advancePC(args[1] << 2) if args[0] < 0 else self.regs.advancePC()
 
-    def _bltzal(self, args = []):     #if $s < 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
+    def _bltzal(self, args = []): #if $s < 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
         pass
 
     def _bne(self, args = []): #if $s != $t advance_pc (offset << 2)); else advance_pc (4)
@@ -196,24 +189,24 @@ class Instruction(object):
         self._syscall_funs[val]() # calls the function stored in the value position of the syscall dictionary
 
     instructions = {
-        0b00000000000000000000000000100000: _add,
-        0b00100000000000000000000000000000: _addi,
-        0b00100100000000000000000000000000: _addiu,
-        0b00000000000000000000000000100001: _addu,
-        0b00000000000000000000000000100100: _and,
-        0b00110000000000000000000000000000: _andi,
-        0b00010000000000000000000000000000: _beq,
-        0b00000100000000010000000000000000: _bgez,
-        0b00000100000100010000000000000000: _bgezal,
-        0b00011100000000000000000000000000: _bgtz,
-        0b00011000000000000000000000000000: _blez,
-        0b00000100000000000000000000000000: _bltz,
-        0b00000100000100000000000000000000: _bltzal,
-        0b00010100000000000000000000000000: _bne,
-        0b00000000000000000000000000011010: _div,
-        0b00000000000000000000000000011011: _divu,
-        0b00001000000000000000000000000000: _jump,
-        0b00001100000000000000000000000000: _jal,
+        0b00000000000000000000000000100000: (_add,rA.get_dst_words),
+        0b00100000000000000000000000000000: (_addi, rA.get_immediate_words_signed),
+        0b00100100000000000000000000000000: (_addiu, rA.get_immediate_words),
+        0b00000000000000000000000000100001: (_addu, rA.get_immediate_words),
+        0b00000000000000000000000000100100: (_and, rA.get_dst_words),
+        0b00110000000000000000000000000000: (_andi, rA.get_immediate_words),
+        0b00010000000000000000000000000000: (_beq, rA.get_branch_with_t_offset),
+        0b00000100000000010000000000000000: (_bgez, rA.get_branch_with_offset),
+        0b00000100000100010000000000000000: (_bgezal, rA.get_branch_with_offset),
+        0b00011100000000000000000000000000: (_bgtz, rA.get_branch_with_offset),
+        0b00011000000000000000000000000000: (_blez, rA.get_branch_with_offset),
+        0b00000100000000000000000000000000: (_bltz, rA.get_branch_with_offset),
+        0b00000100000100000000000000000000: (_bltzal, rA.get_branch_with_offset),
+        0b00010100000000000000000000000000: (_bne, rA.get_branch_with_t_offset),
+        0b00000000000000000000000000011010: (_div, rA.get_st_words),
+        0b00000000000000000000000000011011: (_divu, rA.get_st_words),
+        0b00001000000000000000000000000000: (_jump, rA.get_jump_word),
+        0b00001100000000000000000000000000: (_jal, rA.get_jump_word),
         0b00000000000000000000000000001000: _jr,
         0b10000000000000000000000000000000: _lb,
         0b00111100000000000000000000000000: _lui,
