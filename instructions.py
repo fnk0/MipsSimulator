@@ -192,8 +192,8 @@ class Instruction(object):
     def _xori(self, args = []):
         self._xor(args)
 
-    def _syscall(self, args = []):
-        pass
+    def _syscall(self, val):
+        self._syscall_funs[val]() # calls the function stored in the value position of the syscall dictionary
 
     instructions = {
         0b00000000000000000000000000100000: _add,
@@ -242,3 +242,6 @@ class Instruction(object):
         0b00000000000000000000000000001100: _syscall
     }
 
+    _syscall_funs = {
+
+    }
