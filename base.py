@@ -16,14 +16,13 @@ class Registers(object):
         self.generalPurposes[num] = val
 
     def setInitialPC(self, val):
-        self.pc = val
+        self.PC = val
 
-    def advancePC(self):
-        self.PC += 4
-        print str(self.PC)
+    def advancePC(self, val = 4):
+        self.PC += val
 
-    def decreasePC(self):
-        self.PC -= 4
+    def decreasePC(self, val = 4):
+        self.PC -= val
 
 class Memory(object):
 

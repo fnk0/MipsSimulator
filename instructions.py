@@ -42,139 +42,152 @@ class Instruction(object):
 
     def _add(self, args = []):
         self.regs.generalPurposes[args[0]] = args[1] + args[2]
-        self.getMemory().getRegisters().advancePC()
-        return
+        self.regs.advancePC()
 
     def _addi(self, args = []):
         self._add(args)
-        return
 
     def _addu(self, args = []):
         self._add(args)
-        return
 
     def _addiu(self, args = []):
         self._add(args)
-        return
 
-    def _and(self, args = []):
-        pass
+    def _and(self, args = []): #$d = $s & $t; advance_pc (4);
+        self.regs.generalPurposes[args[0]] = args[1] & args[2]
 
-    def _andi(self, args = []):
-        self._andi(args)
+    def _andi(self, args = []): #$t = $s & imm; advance_pc (4);
+        self._and(args)
 
     def _beq(self, args = []):
+        self.regs.advancePC(args[1] << 2) if args[0] == args[1] else self.regs.advancePC()
+
+    def _bgez(self, args = []): #if $s == $t advance_pc (offset << 2)); else advance_pc (4);
+        self.regs.advancePC(args[1] << 2) if args[0] >= args[1] else self.regs.advancePC()
+
+    def _bgezal(self, args = []): #if $s >= 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
+        self.regs.generalPurposes[31] = self.regs.PC + 8 if args[1] >= 0 else self.regs.advancePC()
+
+    def _bgtz(self, args = []): #if $s > 0 advance_pc (offset << 2)); else advance_pc (4);
+        self.regs.advancePC(args[1] << 2) if args[0] > 0 else self.regs.advancePC()
+
+    def _blez(self, args = []): #if $s <= 0 advance_pc (offset << 2)); else advance_pc (4)
+        self.regs.advancePC(args[1] << 2) if args[0] <= 0 else self.regs.advancePC()
+
+    def _bltz(self, args = []):     #if $s < 0 advance_pc (offset << 2)); else advance_pc (4);
+        self.regs.advancePC(args[1] << 2) if args[0] < 0 else self.regs.advancePC()
+
+    def _bltzal(self, args = []):     #if $s < 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
         pass
 
-    def _bgez(self, args = []):
+    def _bne(self, args = []): #if $s != $t advance_pc (offset << 2)); else advance_pc (4)
+        self.regs.advancePC(args[2] << 2) if args[0] != args[1] else self.regs.advancePC()
+
+    def _div(self, args = []): #$LO = $s / $t; $HI = $s % $t; advance_pc (4);
+        self.regs.LO = args[0] / args[1]
+        self.regs.HI = args[0] / args[1]
+        self.regs.advancePC()
+
+    def _divu(self, args = []):     #$LO = $s / $t; $HI = $s % $t; advance_pc (4);
+        self._div(args)
+
+    def _jump(self, args = []): #PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
+        self.regs.PC = self.regs.nPC
+        self.regs.nPC = self.regs.PC & 0xf0000000 | args[0] << 2
+
+    def _jal(self, args = []): #$31 = PC + 8 (or nPC + 4); PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
         pass
 
-    def _bgezal(self, args = []):
-        pass
+    def _jr(self, args = []): #PC = nPC; nPC = $s;
+        self.regs.PC = self.regs.nPC
+        self.regs.nPC = args[0]
 
-    def _bgtz(self, args = []):
-        pass
+    def _lb(self, args = []):     #$t = MEM[$s + offset]; advance_pc (4);
+        self.regs.setValueForRegister(args[0], self.mem.getValInAddress(args[1] + args[2]))
+        self.regs.advancePC()
 
-    def _blez(self, args = []):
-        pass
+    def _lui(self, args = []):     #$t = (imm << 16); advance_pc (4);
+        self.regs.setValueForRegister(args[0], args[1] << 16)
+        self.regs.advancePC()
 
-    def _bltz(self, args = []):
-        pass
+    def _lw(self, args = []):     #$t = MEM[$s + offset]; advance_pc (4);
+        self.regs.setValueForRegister(args[0], self.mem.getValInAddress(args[1] + args[2]))
+        self.regs.advancePC()
 
-    def _bltzal(self, args = []):
-        pass
+    def _mfhi(self, args = []): #$d = $HI; advance_pc (4);
+        self.regs.generalPurposes(args[0], self.regs.HI)
+        self.regs.advancePC()
 
-    def _bne(self, args = []):
-        pass
+    def _mflo(self, args = []): #$d = $LO; advance_pc (4);
+        self.regs.generalPurposes(args[0], self.regs.LO)
+        self.regs.advancePC()
 
-    def _div(self, args = []):
-        pass
+    def _mult(self, args = []): # $LO = $s * $t; advance_pc (4);
+        self.regs.LO = args[0] * args[1]
+        self.regs.advancePC()
 
-    def _divu(self, args = []):
-        pass
-
-    def _jump(self, args = []):
-        pass
-
-    def _jal(self, args = []):
-        pass
-
-    def _jr(self, args = []):
-        pass
-
-    def _lb(self, args = []):
-        pass
-
-    def _lui(self, args = []):
-        pass
-
-    def _lw(self, args = []):
-        pass
-
-    def _mfhi(self, args = []):
-        pass
-
-    def _mflo(self, args = []):
-        pass
-
-    def _mult(self, args = []):
-        pass
-
-    def _multu(self, args = []):
-        pass
+    def _multu(self, args=[]):
+        self._mult(args)
 
     def _noop(self, args = []):
         pass
 
-    def _or(self, args = []):
-        pass
+    def _or(self, args = []): #$d = $s | $t; advance_pc (4);
+        self.regs.setValueForRegister(args[0], args[1] | args[2])
+        self.regs.advancePC()
 
     def _ori(self, args = []):
-        pass
+        self._or(args)
 
-    def _sb(self, args = []):
-        pass
+    def _sb(self, args = []): #MEM[$s + offset] = (0xff & $t); advance_pc (4);
+        self.mem.setValInAddress(args[0] + args[2], 0xff & args[1])
+        self.regs.advancePC()
 
-    def _sll(self, args = []):
-        pass
+    def _sll(self, args = []): #$d = $t << h; advance_pc (4);
+        self.regs.setValueForRegister(args[0], args[1] << args[2])
+        self.regs.advancePC()
 
-    def _sllv(self, args = []):
-        pass
+    def _sllv(self, args = []): #$d = $t << $s; advance_pc (4);
+        self._sll(args)
 
-    def _slt(self, args = []):
-        pass
+    def _slt(self, args = []): #if $s < $t $d = 1; advance_pc (4); else $d = 0; advance_pc (4);
+        self.regs.setValueForRegister(args[0], 1) if args[1] < args[2] else self.regs.setValueForRegister(args[0], 0)
+        self.regs.advancePC()
 
-    def _slti(self, args = []):
-        pass
+    def _slti(self, args = []): #if $s < imm $t = 1; advance_pc (4); else $t = 0; advance_pc (4);
+        self._slt(args) # change the args[0] from d to t
 
-    def _sltiu(self, args = []):
-        pass
+    def _sltiu(self, args = []): #if $s < imm $t = 1; advance_pc (4); else $t = 0; advance_pc (4);
+        self._slti(args)
 
-    def _sltu(self, args = []):
-        pass
+    def _sltu(self, args = []): #if $s < $t $d = 1; advance_pc (4); else $d = 0; advance_pc (4);
+        self._slt(args)
 
-    def _sra(self, args = []):
-        pass
+    def _sra(self, args = []): #$d = $t >> h; advance_pc (4);
+        self.regs.setValueForRegister(args[0], args[1] >> args[2])
+        self.regs.advancePC()
 
-    def _srl(self, args = []):
-        pass
+    def _srl(self, args = []): #$d = $t >> h; advance_pc (4);
+        self._sra(args)
 
-    def _srlv(self, args = []):
-        pass
+    def _srlv(self, args = []): #$d = $t >> $s; advance_pc (4);
+        self._srv(args)
 
-    def _sub(self, *args):
+    def _sub(self, *args): #$d = $s - $t; advance_pc (4);
         self.regs.generalPurposes[args[0]] = args[1] + args[2]
         self.getMemory().getRegisters().advancePC()
         return
 
-    def _subu(self, args = []):
+    def _subu(self, args = []): #$d = $s - $t; advance_pc (4);
         self._sub(args)
 
-    def _sw(self, args = []):
-        pass
+    def _sw(self, args = []): #MEM[$s + offset] = $t; advance_pc (4);
+        self.mem.setValInAddress(args[0] + args[2], args[1])
+        self.regs.advancePC()
 
-    def _xor(self, args = []):
-        pass
+    def _xor(self, args = []): #$d = $s ^ $t; advance_pc (4);
+        self.regs.setValueForRegister(args[0], args[1] ^ args[2])
+        self.regs.advancePC()
 
     def _xori(self, args = []):
         self._xor(args)
