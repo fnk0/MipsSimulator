@@ -173,6 +173,12 @@ class Instruction(object):
     def _sw(self, args = []):
         pass
 
+    def _xor(self, args = []):
+        pass
+
+    def _xori(self, args = []):
+        self._xor(args)
+
     def _syscall(self, args = []):
         pass
 
@@ -218,6 +224,8 @@ class Instruction(object):
         0b00000000000000000000000000100010: _sub,
         0b00000000000000000000000000100011: _subu,
         0b10101100000000000000000000000000: _sw,
+        0b00000000000000000000000000100110: _xor,
+        0b00111000000000000000000000000000: _xori,
         0b00000000000000000000000000001100: _syscall
     }
 

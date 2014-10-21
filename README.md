@@ -116,6 +116,9 @@ Write a routine that gets a String and converts it to hex
 | subu         | 0b00000000000000000000000000100011 | $d = $s - $t; advance_pc (4);                                                         |
 | sw           | 0b10101100000000000000000000000000 | MEM[$s + offset] = $t; advance_pc (4);                                                |
 | syscall      | 0b00000000000000000000000000001100 | advance_pc (4)                                                                        |
+| xor          | 0b00000000000000000000000000100110 | $d = $s ^ $t; advance_pc (4);                                                         |
+| xori         | 0b00111000000000000000000000000000 | $t = $s ^ imm; advance_pc (4);                                                        |
+
 
 
 
