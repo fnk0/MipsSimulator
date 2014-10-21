@@ -48,25 +48,3 @@ class Memory(object):
     def printMemory(self):
         for x in self.mem:
             if x is not 0: print x
-
-
-class Instruction(object):
-
-    mem = Memory()
-
-    def __init__(self, saveReg, val1, val2, mem):
-        self.saveReg = saveReg
-        self.val1 = val1
-        self.val2 = val2
-        self.mem = mem
-
-    def evaluate(self):
-        """
-        The evaluate method will evaluate the instruction and save it
-        to the specified saveReg
-        :return:
-        """
-        pass
-
-    def getMemory(self):
-        return self.mem
