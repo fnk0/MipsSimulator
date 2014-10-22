@@ -13,16 +13,19 @@ class Instruction(object):
 
     def evaluate(self, num):
         try:
-            return self.instructions[self.rA.applyMaskRegister(num)]
+            ins = self.rA.applyMaskRegister(num)
+            (self.instructions[ins][0](self, self.instructions[ins][1](num)))
         except:
             pass
         try:
             #return (test[y][0](test[y][1](z)))
-            return self.instructions[self.rA.applyMaskJump(num)]
+            ins = self.rA.applyMaskJump(num)
+            (self.instructions[ins][0](self, self.instructions[ins][1](num)))
         except:
             pass
         try:
-            return self.instructions[self.rA.applyMaskImmediate(num)]
+            ins = self.rA.applyMaskImmediate(num)
+            (self.instructions[ins][0](self, self.instructions[ins][1](num)))
         except:
             return
 
@@ -30,8 +33,8 @@ class Instruction(object):
         return self.mem
 
     def _add(self, args = []): #$d = $s + $t; advance_pc (4);
-        self.regs.generalPurposes[args[0]] = args[1] + args[2]
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], args[1] + args[2])
+        self.regs.advance_pc()
 
     def _addi(self, args = []):
         self._add(args)
@@ -49,75 +52,77 @@ class Instruction(object):
         self._and(args)
 
     def _beq(self, args = []):
-        self.regs.advancePC(args[1] << 2) if args[0] == args[1] else self.regs.advancePC()
+        self.regs.advance_pc(args[1] << 2) if args[0] == args[1] else self.regs.advance_pc()
 
     def _bgez(self, args = []): #if $s == $t advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.advancePC(args[1] << 2) if args[0] >= args[1] else self.regs.advancePC()
+        self.regs.advance_pc(args[1] << 2) if args[0] >= args[1] else self.regs.advance_pc()
 
     def _bgezal(self, args = []): #if $s >= 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
         if args[0] >= 0:
-            self.regs.setValueForRegister(31, self.regs.PC + 8)
-            self.regs.advancePC(args[1] << 2)
+            self.regs.set_value_for_register(31, self.regs.PC + 8)
+            self.regs.advance_pc(args[1] << 2)
         else:
-            self.regs.advancePC()
+            self.regs.advance_pc()
 
     def _bgtz(self, args = []): #if $s > 0 advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.advancePC(args[1] << 2) if args[0] > 0 else self.regs.advancePC()
+        self.regs.advance_pc(args[1] << 2) if args[0] > 0 else self.regs.advance_pc()
 
     def _blez(self, args = []): #if $s <= 0 advance_pc (offset << 2)); else advance_pc (4)
-        self.regs.advancePC(args[1] << 2) if args[0] <= 0 else self.regs.advancePC()
+        self.regs.advance_pc(args[1] << 2) if args[0] <= 0 else self.regs.advance_pc()
 
     def _bltz(self, args = []): #if $s < 0 advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.advancePC(args[1] << 2) if args[0] < 0 else self.regs.advancePC()
+        self.regs.advance_pc(args[1] << 2) if args[0] < 0 else self.regs.advance_pc()
 
     def _bltzal(self, args = []): #if $s < 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
         pass
 
     def _bne(self, args = []): #if $s != $t advance_pc (offset << 2)); else advance_pc (4)
-        self.regs.advancePC(args[2] << 2) if args[0] != args[1] else self.regs.advancePC()
+        self.regs.advance_pc(args[2] << 2) if args[0] != args[1] else self.regs.advance_pc()
 
     def _div(self, args = []): #$LO = $s / $t; $HI = $s % $t; advance_pc (4);
         self.regs.LO = args[0] / args[1]
         self.regs.HI = args[0] / args[1]
-        self.regs.advancePC()
+        self.regs.advance_pc()
 
     def _divu(self, args = []):     #$LO = $s / $t; $HI = $s % $t; advance_pc (4);
         self._div(args)
 
-    def _jump(self, args = []): #PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
+    def _jump(self, arg): #PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
         self.regs.PC = self.regs.nPC
-        self.regs.nPC = self.regs.PC & 0xf0000000 | args[0] << 2
+        self.regs.nPC = self.regs.PC & 0xf0000000 | arg << 2
 
-    def _jal(self, args = []): #$31 = PC + 8 (or nPC + 4); PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
-        pass
-
-    def _jr(self, args = []): #PC = nPC; nPC = $s;
+    def _jal(self, arg): #$31 = PC + 8 (or nPC + 4); PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
+        self.regs.set_value_for_register(31, self.regs.PC + 8)
         self.regs.PC = self.regs.nPC
-        self.regs.nPC = args[0]
+        self.regs.nPC = (self.regs.PC & 0xf0000000) | (arg << 2)
+
+    def _jr(self, arg): #PC = nPC; nPC = $s;
+        self.regs.PC = self.regs.nPC
+        self.regs.nPC = arg
 
     def _lb(self, args = []):     #$t = MEM[$s + offset]; advance_pc (4);
-        self.regs.setValueForRegister(args[0], self.mem.getValInAddress(args[1] + args[2]))
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[1], self.mem.get_val_in_address(args[0] + args[2]))
+        self.regs.advance_pc()
 
     def _lui(self, args = []):     #$t = (imm << 16); advance_pc (4);
-        self.regs.setValueForRegister(args[0], args[1] << 16)
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], args[2] << 16)
+        self.regs.advance_pc()
 
     def _lw(self, args = []):     #$t = MEM[$s + offset]; advance_pc (4);
-        self.regs.setValueForRegister(args[0], self.mem.getValInAddress(args[1] + args[2]))
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], self.mem.get_val_in_address(args[1] + args[2]))
+        self.regs.advance_pc()
 
-    def _mfhi(self, args = []): #$d = $HI; advance_pc (4);
-        self.regs.generalPurposes(args[0], self.regs.HI)
-        self.regs.advancePC()
+    def _mfhi(self, arg): #$d = $HI; advance_pc (4);
+        self.regs.generalPurposes(arg, self.regs.HI)
+        self.regs.advance_pc()
 
-    def _mflo(self, args = []): #$d = $LO; advance_pc (4);
-        self.regs.generalPurposes(args[0], self.regs.LO)
-        self.regs.advancePC()
+    def _mflo(self, arg): #$d = $LO; advance_pc (4);
+        self.regs.generalPurposes(arg, self.regs.LO)
+        self.regs.advance_pc()
 
     def _mult(self, args = []): # $LO = $s * $t; advance_pc (4);
         self.regs.LO = args[0] * args[1]
-        self.regs.advancePC()
+        self.regs.advance_pc()
 
     def _multu(self, args=[]):
         self._mult(args)
@@ -126,26 +131,26 @@ class Instruction(object):
         pass
 
     def _or(self, args = []): #$d = $s | $t; advance_pc (4);
-        self.regs.setValueForRegister(args[0], args[1] | args[2])
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], args[1] | args[2])
+        self.regs.advance_pc()
 
     def _ori(self, args = []):
         self._or(args)
 
     def _sb(self, args = []): #MEM[$s + offset] = (0xff & $t); advance_pc (4);
         self.mem.setValInAddress(args[0] + args[2], 0xff & args[1])
-        self.regs.advancePC()
+        self.regs.advance_pc()
 
     def _sll(self, args = []): #$d = $t << h; advance_pc (4);
-        self.regs.setValueForRegister(args[0], args[1] << args[2])
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], args[2] << args[1])
+        self.regs.advance_pc()
 
     def _sllv(self, args = []): #$d = $t << $s; advance_pc (4);
         self._sll(args)
 
     def _slt(self, args = []): #if $s < $t $d = 1; advance_pc (4); else $d = 0; advance_pc (4);
-        self.regs.setValueForRegister(args[0], 1) if args[1] < args[2] else self.regs.setValueForRegister(args[0], 0)
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], 1) if args[1] < args[2] else self.regs.set_value_for_register(args[0], 0)
+        self.regs.advance_pc()
 
     def _slti(self, args = []): #if $s < imm $t = 1; advance_pc (4); else $t = 0; advance_pc (4);
         self._slt(args) # change the args[0] from d to t
@@ -157,18 +162,18 @@ class Instruction(object):
         self._slt(args)
 
     def _sra(self, args = []): #$d = $t >> h; advance_pc (4);
-        self.regs.setValueForRegister(args[0], args[1] >> args[2])
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], args[1] >> args[2])
+        self.regs.advance_pc()
 
     def _srl(self, args = []): #$d = $t >> h; advance_pc (4);
         self._sra(args)
 
     def _srlv(self, args = []): #$d = $t >> $s; advance_pc (4);
-        self._srv(args)
+        self._srl(args)
 
     def _sub(self, *args): #$d = $s - $t; advance_pc (4);
         self.regs.generalPurposes[args[0]] = args[1] + args[2]
-        self.getMemory().getRegisters().advancePC()
+        self.getMemory().get_registers().advance_pc()
         return
 
     def _subu(self, args = []): #$d = $s - $t; advance_pc (4);
@@ -176,11 +181,11 @@ class Instruction(object):
 
     def _sw(self, args = []): #MEM[$s + offset] = $t; advance_pc (4);
         self.mem.setValInAddress(args[0] + args[2], args[1])
-        self.regs.advancePC()
+        self.regs.advance_pc()
 
     def _xor(self, args = []): #$d = $s ^ $t; advance_pc (4);
-        self.regs.setValueForRegister(args[0], args[1] ^ args[2])
-        self.regs.advancePC()
+        self.regs.set_value_for_register(args[0], args[1] ^ args[2])
+        self.regs.advance_pc()
 
     def _xori(self, args = []):
         self._xor(args)
@@ -207,31 +212,31 @@ class Instruction(object):
         0b00000000000000000000000000011011: (_divu, rA.get_st_words),
         0b00001000000000000000000000000000: (_jump, rA.get_jump_word),
         0b00001100000000000000000000000000: (_jal, rA.get_jump_word),
-        0b00000000000000000000000000001000: _jr,
-        0b10000000000000000000000000000000: _lb,
-        0b00111100000000000000000000000000: _lui,
-        0b10001100000000000000000000000000: _lw,
-        0b00000000000000000000000000010000: _mfhi,
-        0b00000000000000000000000000010010: _mflo,
-        0b00000000000000000000000000011000: _mult,
-        0b00000000000000000000000000011001: _multu,
-        0b00000000000000000000000000100101: _or,
-        0b00110100000000000000000000000000: _ori,
-        0b10100000000000000000000000000000: _sb,
-        0b00000000000000000000000000000000: _sll,
-        0b00000000000000000000000000000100: _sllv,
-        0b00000000000000000000000000101010: _slt,
-        0b00101000000000000000000000000000: _slti,
-        0b00101100000000000000000000000000: _sltiu,
-        0b00000000000000000000000000101011: _sltu,
-        0b00000000000000000000000000000011: _sra,
-        0b00000000000000000000000000000010: _srl,
-        0b00000000000000000000000000000110: _srlv,
-        0b00000000000000000000000000100010: _sub,
-        0b00000000000000000000000000100011: _subu,
-        0b10101100000000000000000000000000: _sw,
-        0b00000000000000000000000000100110: _xor,
-        0b00111000000000000000000000000000: _xori,
+        0b00000000000000000000000000001000: (_jr, rA.get_s_word),
+        0b10000000000000000000000000000000: (_lb, rA.get_branch_with_t_offset),
+        0b00111100000000000000000000000000: (_lui, rA.get_immediate_words),
+        0b10001100000000000000000000000000: (_lw, rA.get_immediate_words),
+        0b00000000000000000000000000010000: (_mfhi, rA.get_d_word),
+        0b00000000000000000000000000010010: (_mflo, rA.get_d_word),
+        0b00000000000000000000000000011000: (_mult, rA.get_st_words),
+        0b00000000000000000000000000011001: (_multu, rA.get_st_words),
+        0b00000000000000000000000000100101: (_or, rA.get_dst_words),
+        0b00110100000000000000000000000000: (_ori, rA.get_immediate_words),
+        0b10100000000000000000000000000000: (_sb, rA.get_t_offset_words),
+        0b00000000000000000000000000000000: (_sll, rA.get_dht_words),
+        0b00000000000000000000000000000100: (_sllv, rA.get_dst_words),
+        0b00000000000000000000000000101010: (_slt, rA.get_dst_words),
+        0b00101000000000000000000000000000: (_slti, rA.get_immediate_words_signed),
+        0b00101100000000000000000000000000: (_sltiu, rA.get_immediate_words),
+        0b00000000000000000000000000101011: (_sltu, rA.get_dst_words),
+        0b00000000000000000000000000000011: (_sra, rA.get_dht_words),
+        0b00000000000000000000000000000010: (_srl, rA.get_dht_words),
+        0b00000000000000000000000000000110: (_srlv, rA.get_dst_words),
+        0b00000000000000000000000000100010: (_sub, rA.get_dst_words),
+        0b00000000000000000000000000100011: (_subu, rA.get_dst_words),
+        0b10101100000000000000000000000000: (_sw, rA.get_branch_with_t_offset),
+        0b00000000000000000000000000100110: (_xor, rA.get_dst_words),
+        0b00111000000000000000000000000000: (_xori, rA.get_immediate_words),
         0b00000000000000000000000000001100: _syscall
     }
 

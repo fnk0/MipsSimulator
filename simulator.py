@@ -6,6 +6,7 @@ import string
 from base import Memory
 from process import FileProcess
 from instructions import Instruction
+from syscall import Syscall
 
 
 def usage():
@@ -39,9 +40,17 @@ if __name__ == "__main__":
     #for l in inputFile:
     #    print l
     fProcess.process(inputFile)
-    ins = Instruction(mem, mem.getRegisters())
+    ins = Instruction(mem.get_registers(), mem)
+    s_call = Syscall(mem.get_registers(), mem)
 
-    for x in mem.mem:
-        if x is not 0:
-            #print x
-            print ins.evaluate(x)
+
+    # mem.print_memory()
+
+    # mem.get_registers().set_value_for_register(4, 0x00007000)
+
+    # s_call.print_string()
+
+    # for x in mem.mem:
+    #    if x is not 0:
+    #        #print x
+    #        ins.evaluate(x)

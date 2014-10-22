@@ -9,20 +9,20 @@ class Registers(object):
         self.LO = 0
         self.HI = 0
 
-    def getValueForRegister(self, num):
+    def get_value_for_register(self, num):
         return self.generalPurposes[num]
 
-    def setValueForRegister(self, val, num):
+    def set_value_for_register(self, num, val):
         self.generalPurposes[num] = val
 
-    def setInitialPC(self, val):
+    def set_initial_pc(self, val):
         self.PC = val
 
-    def advancePC(self, val = 4):
+    def advance_pc(self, val = 4):
         self.PC = self.nPC
         self.nPC += val
 
-    def decreasePC(self, val = 4):
+    def decrease_pc(self, val = 4):
         self.PC = self.nPC
         self.nPC -= val
 
@@ -33,19 +33,19 @@ class Memory(object):
     def __init__(self):
         self.mem = [0] * (2**20)
 
-    def getValInAddress(self, address):
+    def get_val_in_address(self, address):
         return self.mem[address >> 2]
 
-    def setValToAddress(self, val, address):
+    def set_val_to_address(self, val, address):
         self.mem[address >> 2] = val
 
-    def getRegisters(self):
+    def get_registers(self):
         return self.reg
 
-    def getRegisterNum(self, reg):
+    def get_register_num(self, reg):
         #print "Register Number! " + reg[1:len(reg)]
         return int(reg[1:len(reg)])
 
-    def printMemory(self):
+    def print_memory(self):
         for x in self.mem:
             if x is not 0: print x

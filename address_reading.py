@@ -46,6 +46,9 @@ class ReadAddress:
     def get_st_words(self, num): #returns  $s, $t
         return [self.get_s_word(num), self.get_t_word(num)]
 
+    def get_t_offset_words(self, num):
+        return [self.get_t_word(num), self.get_offset_word(num)]
+
     def get_immediate_words(self, num): #returns $t, $s0, imm
         return [self.get_t_word(num), self.get_s_word(num), self.get_imm_val(num)]
 
@@ -57,6 +60,9 @@ class ReadAddress:
 
     def get_branch_with_offset(self, num):
         return [self.get_s_word(num), self.get_offset_word(num)]
+
+    def get_dht_words(self, num):
+        return [self.get_d_word(num), self.get_h_word(num), self.get_t_word(num)]
 
     def sign_extend(self, val):
         return (val | 0xFFFF0000) if (val & 0x8000 != 0) else val

@@ -28,7 +28,7 @@ class FileProcess(object):
             if location == "PC":
                 return (0, self.IS_PC)
             else:
-                return (self.mem.getRegisterNum(location), self.IS_REG)
+                return (self.mem.get_register_num(location), self.IS_REG)
 
     def process(self, file):
         # print len(mem.mem) # debug Only check the size of the array
@@ -48,13 +48,13 @@ class FileProcess(object):
                     val = int(s, 16) # check if the value is a hex string
                     # print val
                     if addr[1] == self.IS_MEM:
-                        self.mem.setValToAddress(val, address)
+                        self.mem.set_val_to_address(val, address)
                         # print "Addr: " + str(address)
                         # print "Addr Val: " + str(self.mem.mem[address >> 4])
                     elif addr[1] == self.IS_PC:
-                        self.mem.getRegisters().setInitialPC(val)
+                        self.mem.get_registers().set_initial_pc(val)
                     elif addr[1] == self.IS_REG:
-                        self.mem.getRegisters().setValueForRegister(val, address)
+                        self.mem.get_registers().set_value_for_register(address, val)
                     else:
                         continue
 
