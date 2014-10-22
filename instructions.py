@@ -7,9 +7,10 @@ class Instruction(object):
 
     rA = ReadAddress()
 
-    def __init__(self, regs, mem):
+    def __init__(self, regs, mem, sys):
         self.regs = regs
         self.mem = mem
+        self.s_call = sys
 
     def evaluate(self, num):
         try:
@@ -191,7 +192,7 @@ class Instruction(object):
         self._xor(args)
 
     def _syscall(self, val):
-        self._syscall_funs[val]() # calls the function stored in the value position of the syscall dictionary
+        self.s_call._syscall_funs[val]() # calls the function stored in the value position of the syscall dictionary
 
     instructions = {
         0b00000000000000000000000000100000: (_add,rA.get_dst_words),
@@ -238,8 +239,4 @@ class Instruction(object):
         0b00000000000000000000000000100110: (_xor, rA.get_dst_words),
         0b00111000000000000000000000000000: (_xori, rA.get_immediate_words),
         0b00000000000000000000000000001100: _syscall
-    }
-
-    _syscall_funs = {
-
     }

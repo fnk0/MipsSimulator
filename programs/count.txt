@@ -31,7 +31,7 @@
 [0x00000050]	0x3404700d  ori $4, $0, 0x70fd
 [0x00000054]	0x0000000c  syscall                         ; 22: syscall
 [0x00000058]	0x0800000e  j 0x00400038 [loop]             ; 25: j loop
-[0x0000005c]	0x25080001  addi $8, $8, 1                  ; 24: addi $t0, $t0, 1
+[0x0000005c]	0x25080001  addiu $8, $8, 1                  ; 24: addiu $t0, $t0, 1
 [0x00000060]	0x03e00008  jr $31                          ; 27: jr $ra          # retrun to caller
 
 # Data

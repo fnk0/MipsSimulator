@@ -1,6 +1,7 @@
 __author__ = 'marcus'
 
 from numpy import binary_repr
+from numpy import unpackbits
 import binascii
 
 reg = [0] * 31
@@ -130,6 +131,19 @@ print get_ch3(t2)
 print get_ch4(t2)
 """
 
+def numfy(s):
+    number = 0
+    for e in [ord(c) for c in s]:
+        number = (number * 0x110000) + e
+    return number
+
+def denumfy(number):
+    l = []
+    while(number != 0):
+        l.append(chr(number % 0x110000))
+        number = number // 0x110000
+    return ''.join(reversed(l))
+
 t_str = "Hello World"
 
 x = ''.join(format(ord(i),'b').zfill(8) for i in t_str)
@@ -139,10 +153,13 @@ counter = 0
 while True:
     num = 0
     try:
-        num += int(x[0 + counter:8 + counter], 2)
-        num += int(x[8 + counter:16 + counter], 2)
-        num += int(x[16 + counter:24 + counter], 2)
-        num += int(x[24 + counter:32 + counter], 2)
+        num1 = int(x[24 + counter:32 + counter], 2)
+        num2 = int(x[16 + counter:24 + counter], 2)
+        num3 = int(x[8 + counter:16 + counter], 2)
+        num4 = int(x[0 + counter:8 + counter], 2)
+
+        print str(num1) + str(num2) + str(num3) + str(num4)
+
         arr.append(num)
         counter += 32
     except:
@@ -150,21 +167,39 @@ while True:
         break
 
 print arr
-print get_ch1(arr[0])
-print get_ch2(arr[0])
-print get_ch3(arr[0])
-print get_ch4(arr[0])
 
-print get_ch1(arr[1])
-print get_ch2(arr[1])
-print get_ch3(arr[1])
-print get_ch4(arr[1])
-
-print get_ch1(arr[2])
-print get_ch2(arr[2])
-print get_ch3(arr[2])
 print get_ch4(arr[2])
 
+print numfy(t_str)
+
+a = [ord(c) for c in t_str]
+
+print a
+sl = []
+s = ""
+"""
+count = 1
+for b in a:
+    s = hex(b)[2:] + s
+    if count % 4 == 0:
+        sl.append("0x" + s)
+        s = ""
+    count +=1
+sl.append(s)
+sl.append("00000000")
+"""
+
+
+for i  in range(0, len(a), 1):
+    s = hex(a[i])[2:] + s
+    if (i + 1) % 4 == 0 or i == len(a) -1:
+        sl.append("0x" + s)
+        s = ""
+sl.append("0x00000000")
+
+xi = [int(zx, 16) for zx in sl]
+print sl
+print xi
 
 
 

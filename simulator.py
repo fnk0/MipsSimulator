@@ -40,8 +40,9 @@ if __name__ == "__main__":
     #for l in inputFile:
     #    print l
     fProcess.process(inputFile)
-    ins = Instruction(mem.get_registers(), mem)
     s_call = Syscall(mem.get_registers(), mem)
+    ins = Instruction(mem.get_registers(), mem, s_call)
+
 
 
     # mem.print_memory()
@@ -50,7 +51,7 @@ if __name__ == "__main__":
 
     # s_call.print_string()
 
-    # for x in mem.mem:
+    #for x in mem.mem:
     #    if x is not 0:
     #        #print x
     #        ins.evaluate(x)

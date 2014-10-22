@@ -47,5 +47,31 @@ class Syscall:
 
         print out
 
+
+    def read_sring(self):
+        sl = []
+        s = ""
+        r_str = raw_input("Sycall read String: ")
+        arr = [ord(c) for c in r_str]
+        for i  in range(0, len(arr), 1):
+            s = hex(arr[i])[2:] + s
+            if (i + 1) % 4 == 0 or i == len(arr) -1:
+                sl.append("0x" + s)
+                s = ""
+        sl.append("0x00000000")
+        arr_i = [int(x, 16) for x in sl]
+        counter = 0
+        for b in arr_i:
+            self.mem.set_val_to_address(self.regs.get_value_for_register(self.a0) + counter, b)
+            counter += 4
+
     def sys_exit(self):
         sys.exit(0)
+
+    _syscall_funs = {
+        1: print_integer,
+        4: print_string,
+        5: read_integer,
+        8: read_sring,
+        10: sys_exit
+    }
