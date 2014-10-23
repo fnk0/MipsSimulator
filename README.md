@@ -120,4 +120,16 @@ Write a routine that gets a String and converts it to hex
 | xori         | 0b00111000000000000000000000000000 | $t = $s ^ imm; advance_pc (4);                                                        |
 
 
-
+```python
+try:
+    ins = self.rA.applyOtherMask(num)
+    (self.instructions[ins][0](self, self.instructions[ins][1](num)))
+    print "TEST: " + str(self.instructions[ins][0]) + ",  " + str(self.instructions[ins][1])
+except:
+    try:
+        ins = self.rA.applyMaskMFHI_LO(num)
+        (self.instructions[ins][0](self, self.instructions[ins][1](num)))
+        print "MFHI_LO: " + str(self.instructions[ins][0]) + ",  " + str(self.instructions[ins][1])
+    except:
+    
+```

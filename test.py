@@ -189,7 +189,6 @@ sl.append(s)
 sl.append("00000000")
 """
 
-
 for i  in range(0, len(a), 1):
     s = hex(a[i])[2:] + s
     if (i + 1) % 4 == 0 or i == len(a) -1:
@@ -201,6 +200,18 @@ xi = [int(zx, 16) for zx in sl]
 print sl
 print xi
 
+
+mfhi = 0x00005810
+
+def applyMaskJump(num):
+    return num & 0b11111100000000000000000000111111
+
+print applyMaskJump(mfhi)
+
+sxz = 0x27a50004
+
+print sxz & 0b11111100000000000000000000000000
+print 0b11111100000000000000000000000000 & 0b00100100000000000000000000000000
 
 
 

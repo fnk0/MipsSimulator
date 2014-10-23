@@ -3,9 +3,9 @@ __author__ = 'marcus'
 class Registers(object):
 
     def __init__(self):
-        self.generalPurposes = [0] * 31
+        self.generalPurposes = [0] * 32
         self.PC = 0
-        self.nPC = 0
+        self.nPC = self.PC + 4
         self.LO = 0
         self.HI = 0
 
@@ -17,6 +17,7 @@ class Registers(object):
 
     def set_initial_pc(self, val):
         self.PC = val
+        self.nPC = val + 4
 
     def advance_pc(self, val = 4):
         self.PC = self.nPC

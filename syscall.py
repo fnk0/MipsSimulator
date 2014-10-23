@@ -28,7 +28,7 @@ class Syscall:
 
     def read_integer(self):
         x = raw_input("Syscall Read Integer: ")
-        self.regs.set_value_for_register(self.v0, x)
+        self.regs.set_value_for_register(self.v0, int(x))
 
     def print_string(self):
         addr = self.regs.get_value_for_register(self.a0)

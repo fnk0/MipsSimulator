@@ -15,9 +15,10 @@ def usage():
     print "Modes available: -d (debug), -n (normal)"
 
 if __name__ == "__main__":
+    print "Mips Simulator writen by Marcus Gabilheri"
     inputFile = []
     mem = Memory()
-
+    debug = True if sys.argv[1] == "-d" else False
     fProcess = FileProcess(mem)
 
     if len(sys.argv) != 3:
@@ -37,21 +38,15 @@ if __name__ == "__main__":
                     arr.append(i)
             inputFile.append(arr)
 
-    #for l in inputFile:
-    #    print l
     fProcess.process(inputFile)
     s_call = Syscall(mem.get_registers(), mem)
     ins = Instruction(mem.get_registers(), mem, s_call)
+    debug = False
+    while True:
+        if debug:
+            command = raw_input("")
 
+            if command == "":
+                continue
 
-
-    # mem.print_memory()
-
-    # mem.get_registers().set_value_for_register(4, 0x00007000)
-
-    # s_call.print_string()
-
-    #for x in mem.mem:
-    #    if x is not 0:
-    #        #print x
-    #        ins.evaluate(x)
+        ins.evaluate(mem.get_val_in_address(mem.get_registers().PC))
