@@ -35,9 +35,11 @@ class Memory(object):
         self.mem = [0] * (2**20)
 
     def get_val_in_address(self, address):
+        #print address
         return self.mem[address >> 2]
 
     def set_val_to_address(self, val, address):
+        #print address
         self.mem[address >> 2] = val
 
     def get_registers(self):

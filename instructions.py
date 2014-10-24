@@ -30,6 +30,7 @@ class Instruction(object):
             ins = self.rA.applyMaskImmediate(num)
 
         f = self.rA.get_fields(num)
+        #print self.instructions[ins]
         self.instructions[ins](self, f)
 
     def getMemory(self):
@@ -59,10 +60,10 @@ class Instruction(object):
         self.regs.advance_pc()
 
     def _beq(self, f): # if $s == $t advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.advance_pc(f.offset << 2) if self.regs.generalPurposes[f.s] == self.regs.generalPurposes[f.t] else self.regs.advance_pc()
+        self.regs.advance_pc(f.s_imm << 2) if self.regs.generalPurposes[f.s] == self.regs.generalPurposes[f.t] else self.regs.advance_pc()
 
     def _bgez(self, f): # if $s >= 0 advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.advance_pc(f.offset << 2) if self.regs.generalPurposes[f.s] >= 0 else self.regs.advance_pc()
+        self.regs.advance_pc(f.s_imm << 2) if self.regs.generalPurposes[f.s] >= 0 else self.regs.advance_pc()
 
     def _bgezal(self, f): #if $s >= 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
         if self.regs.generalPurposes[f.s] >= 0:
@@ -72,23 +73,23 @@ class Instruction(object):
             self.regs.advance_pc()
 
     def _bgtz(self, f): #if $s > 0 advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.advance_pc(f.offset << 2) if self.regs.generalPurposes[f.s] > 0 else self.regs.advance_pc()
+        self.regs.advance_pc(f.s_imm << 2) if self.regs.generalPurposes[f.s] > 0 else self.regs.advance_pc()
 
     def _blez(self, f): #if $s <= 0 advance_pc (offset << 2)); else advance_pc (4)
-        self.regs.advance_pc(f.offset << 2) if self.regs.generalPurposes[f.s] <= 0 else self.regs.advance_pc()
+        self.regs.advance_pc(f.s_imm << 2) if self.regs.generalPurposes[f.s] <= 0 else self.regs.advance_pc()
 
     def _bltz(self, f): #if $s < 0 advance_pc (offset << 2)); else advance_pc (4);
-        self.regs.advance_pc(f.offset << 2) if self.regs.generalPurposes[f.s] < 0 else self.regs.advance_pc()
+        self.regs.advance_pc(f.s_imm << 2) if self.regs.generalPurposes[f.s] < 0 else self.regs.advance_pc()
 
     def _bltzal(self, f): #if $s < 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
         if f.s < 0:
             self.regs.set_value_for_register(31, self.regs.PC + 8)
-            self.regs.advance_pc(f.offset << 2)
+            self.regs.advance_pc(f.s_imm << 2)
         else:
             self.regs.advance_pc()
 
     def _bne(self, f): #if $s != $t advance_pc (offset << 2)); else advance_pc (4)
-        self.regs.advance_pc(f.offset << 2) if self.regs.generalPurposes[f.s] != self.regs.generalPurposes[f.t] else self.regs.advance_pc()
+        self.regs.advance_pc(f.s_imm << 2) if self.regs.generalPurposes[f.s] != self.regs.generalPurposes[f.t] else self.regs.advance_pc()
 
     def _div(self, f): #$LO = $s / $t; $HI = $s % $t; advance_pc (4);
         self.regs.LO = self.regs.generalPurposes[f.s] / self.regs.generalPurposes[f.t]
@@ -100,7 +101,7 @@ class Instruction(object):
 
     def _jump(self, f): #PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
         self.regs.PC = self.regs.nPC
-        self.regs.nPC = self.regs.PC & 0xf0000000 | f.jump << 2
+        self.regs.nPC = (self.regs.PC & 0xf0000000) | (f.jump << 2)
 
     def _jal(self, f): #$31 = PC + 8 (or nPC + 4); PC = nPC; nPC = (PC & 0xf0000000) | (target << 2);
         self.regs.set_value_for_register(31, self.regs.PC + 8)
@@ -195,7 +196,7 @@ class Instruction(object):
         self._sub(f)
 
     def _sw(self, f): #MEM[$s + offset] = $t; advance_pc (4);
-        self.mem.set_val_to_address(f.s + f.offset, self.regs.generalPurposes[f.t])
+        self.mem.set_val_to_address(self.regs.generalPurposes[f.s] + f.s_imm, self.regs.generalPurposes[f.t])
         self.regs.advance_pc()
 
     def _xor(self, f): #$d = $s ^ $t; advance_pc (4);

@@ -42,7 +42,7 @@ class ReadAddress(object):
         imm = (num & 0xFFFF)
         s_imm = self.sign_extend(imm)
         sh = (num >> 6) & 0x1F
-        jump = self.sign_extend(num & 0x3FFFFFF)
+        jump = num & 0x3FFFFFF
         offset = (num & 0xFFFF)
         return Fields(s, t, d, imm, s_imm, sh, jump, offset)
 
