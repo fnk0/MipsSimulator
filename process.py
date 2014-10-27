@@ -60,5 +60,3 @@ class FileProcess(object):
 
                 except ValueError:
                     break # break the loop if the value is no longer a hex string
-
-

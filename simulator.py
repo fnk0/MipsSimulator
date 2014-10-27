@@ -14,6 +14,10 @@ def usage():
     print "Modes available: -d (debug), -n (normal)"
     sys.exit(0)
 
+def debug():
+    print "Debug mode is ON!"
+    print ""
+
 if __name__ == "__main__":
     print "Welcome to Mips Simulator by Marcus Gabilheri"
     inputFile = []
@@ -45,21 +49,24 @@ if __name__ == "__main__":
     fProcess.process(inputFile)
     s_call = Syscall(mem.get_registers(), mem)
     ins = Instruction(mem.get_registers(), mem, s_call)
-    com = Command(mem.get_registers(), mem)
+    com = Command(mem.get_registers(), mem, ins)
     #debug = False
     while True:
         if debug:
             command = raw_input("")
             print "PC: " + hex(mem.get_registers().PC)
-            #print hex(mem.get_val_in_address(mem.get_registers().PC))
+            print "Instruction Word: " + hex(mem.get_val_in_address(mem.get_registers().PC))
             line = command.split(" ")
-            if command == "c":
-                continue
-            elif line[1] == "mem":
-                com.execute_command(line[0] + " " + line[1], line[2])
-            elif line[1] == 'reg':
-                com.execute_command(line[0] + " " + line[1], line[2])
-            else:
-                continue
+            if len(line) > 2:
+                if line[1] == "mem":
+                    com.execute_command(line[0] + " " + line[1], line[2])
+                elif line[1] == 'reg':
+                    com.execute_command(line[0] + " " + line[1], line[2])
+                elif line[1] == 'inst':
+                    com.execute_command(line[0] + " " + line[1], mem.get_val_in_address(mem.get_registers().PC))
 
-            ins.evaluate(mem.get_val_in_address(mem.get_registers().PC))
+                continue
+            else:
+                pass
+
+        ins.evaluate(mem.get_val_in_address(mem.get_registers().PC))

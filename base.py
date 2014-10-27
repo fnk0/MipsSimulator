@@ -27,6 +27,9 @@ class Registers(object):
         self.PC = self.nPC
         self.nPC -= val
 
+    def set_gp_val(self, val):
+        self.generalPurposes[28] = val + 4
+
 class Memory(object):
 
     reg = Registers()

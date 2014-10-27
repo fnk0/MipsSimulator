@@ -16,7 +16,10 @@ class Instruction(object):
         if num == 0:
             self._nop()
             return
+        f = self.rA.get_fields(num)
+        self.get_instruction(num)(self, f)
 
+    def get_instruction(self, num):
         ins = 0
         if self.instructions.has_key(self.rA.applyMaskRegister(num)):
             ins = self.rA.applyMaskRegister(num)
@@ -29,11 +32,10 @@ class Instruction(object):
         elif self.instructions.has_key(self.rA.applyMaskImmediate(num)):
             ins = self.rA.applyMaskImmediate(num)
 
-        f = self.rA.get_fields(num)
-        #print self.instructions[ins]
-        self.instructions[ins](self, f)
+        return self.instructions[ins]
 
-    def getMemory(self):
+
+    def get_memory(self):
         return self.mem
 
     def _add(self, f): #$d = $s + $t; advance_pc (4);
@@ -68,7 +70,7 @@ class Instruction(object):
     def _bgezal(self, f): #if $s >= 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
         if self.regs.generalPurposes[f.s] >= 0:
             self.regs.set_value_for_register(31, self.regs.PC + 8)
-            self.regs.advance_pc(f.offset << 2)
+            self.regs.advance_pc(f.s_imm << 2)
         else:
             self.regs.advance_pc()
 
@@ -82,7 +84,7 @@ class Instruction(object):
         self.regs.advance_pc(f.s_imm << 2) if self.regs.generalPurposes[f.s] < 0 else self.regs.advance_pc()
 
     def _bltzal(self, f): #if $s < 0 $31 = PC + 8 (or nPC + 4); advance_pc (offset << 2)); else advance_pc (4);
-        if f.s < 0:
+        if self.regs.generalPurposes[f.s] < 0:
             self.regs.set_value_for_register(31, self.regs.PC + 8)
             self.regs.advance_pc(f.s_imm << 2)
         else:
@@ -113,7 +115,7 @@ class Instruction(object):
         self.regs.nPC = self.regs.generalPurposes[f.s]
 
     def _lb(self, f):     #$t = MEM[$s + offset]; advance_pc (4);
-        self.regs.set_value_for_register(f.t, self.mem.get_val_in_address(f.s + f.offset))
+        self.regs.set_value_for_register(f.t, self.mem.get_val_in_address(self.regs.generalPurposes[f.s] + f.s_imm))
         self.regs.advance_pc()
 
     def _lui(self, f):     #$t = (imm << 16); advance_pc (4);
@@ -121,7 +123,7 @@ class Instruction(object):
         self.regs.advance_pc()
 
     def _lw(self, f):     #$t = MEM[$s + offset]; advance_pc (4);
-        self.regs.set_value_for_register(f.t, self.mem.get_val_in_address(f.s + f.offset))
+        self.regs.set_value_for_register(f.t, self.mem.get_val_in_address(self.regs.generalPurposes[f.s] + f.s_imm))
         self.regs.advance_pc()
 
     def _mfhi(self, f): #$d = $HI; advance_pc (4);
@@ -143,7 +145,7 @@ class Instruction(object):
         self.regs.advance_pc()
 
     def _or(self, f): #$d = $s | $t; advance_pc (4);
-        self.regs.set_value_for_register(f.d, self.regs.generalPurposes[f.s]| self.regs.generalPurposes[f.t])
+        self.regs.set_value_for_register(f.d, self.regs.generalPurposes[f.s] | self.regs.generalPurposes[f.t])
         self.regs.advance_pc()
 
     def _ori(self, f): #$t = $s | imm; advance_pc (4);
@@ -151,7 +153,7 @@ class Instruction(object):
         self.regs.advance_pc()
 
     def _sb(self, f): #MEM[$s + offset] = (0xff & $t); advance_pc (4);
-        self.mem.setValInAddress(f.s + f.offset, 0xff & self.regs.generalPurposes[f.t])
+        self.mem.set_val_to_address(self.regs.generalPurposes[f.s] + f.s_imm, 0xff & self.regs.generalPurposes[f.t])
         self.regs.advance_pc()
 
     def _sll(self, f): #$d = $t << h; advance_pc (4);
@@ -163,15 +165,15 @@ class Instruction(object):
          self.regs.advance_pc()
 
     def _slt(self, f): #if $s < $t $d = 1; advance_pc (4); else $d = 0; advance_pc (4);
-        self.regs.set_value_for_register(f.d, 1) if f.s < f.t else self.regs.set_value_for_register(f.d, 0)
+        self.regs.set_value_for_register(f.d, 1) if self.regs.generalPurposes[f.s] < self.regs.generalPurposes[f.t] else self.regs.set_value_for_register(f.d, 0)
         self.regs.advance_pc()
 
     def _slti(self, f): #if $s < imm $t = 1; advance_pc (4); else $t = 0; advance_pc (4);
-         self.regs.set_value_for_register(f.d, 1) if self.regs.generalPurposes[f.s] < f.s_imm else self.regs.set_value_for_register(f.d, 0)
+         self.regs.set_value_for_register(f.t, 1) if self.regs.generalPurposes[f.s] < f.s_imm else self.regs.set_value_for_register(f.t, 0)
          self.regs.advance_pc()
 
     def _sltiu(self, f): #if $s < imm $t = 1; advance_pc (4); else $t = 0; advance_pc (4);
-        self.regs.set_value_for_register(f.d, 1) if self.regs.generalPurposes[f.s]< f.imm else self.regs.set_value_for_register(f.d, 0)
+        self.regs.set_value_for_register(f.t, 1) if self.regs.generalPurposes[f.s]< f.imm else self.regs.set_value_for_register(f.t, 0)
         self.regs.advance_pc()
 
     def _sltu(self, f): #if $s < $t $d = 1; advance_pc (4); else $d = 0; advance_pc (4);
@@ -190,7 +192,7 @@ class Instruction(object):
 
     def _sub(self, f): #$d = $s - $t; advance_pc (4);
         self.regs.set_value_for_register(f.d, self.regs.generalPurposes[f.s] - self.regs.generalPurposes[f.t])
-        self.getMemory().get_registers().advance_pc()
+        self.regs.advance_pc()
 
     def _subu(self, f): #$d = $s - $t; advance_pc (4);
         self._sub(f)
@@ -204,7 +206,7 @@ class Instruction(object):
         self.regs.advance_pc()
 
     def _xori(self, f): #$t = $s ^ imm; advance_pc (4);
-        self.regs.set_value_for_register(f.d, self.regs.generalPurposes[f.s] ^ self.regs.generalPurposes[f.imm])
+        self.regs.set_value_for_register(f.t, self.regs.generalPurposes[f.s] ^ self.regs.generalPurposes[f.imm])
         self.regs.advance_pc()
 
     def _syscall(self, f):

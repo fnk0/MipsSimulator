@@ -2,7 +2,7 @@ __author__ = 'marcus'
 
 class Fields(object):
 
-    def __init__(self, s, t, d, imm, s_imm, sh, jump, offset):
+    def __init__(self, s, t, d, imm, s_imm, sh, jump):
         self.s = s
         self.t = t
         self.d = d
@@ -10,7 +10,6 @@ class Fields(object):
         self.s_imm = s_imm
         self.sh = sh
         self.jump = jump
-        self.offset = offset
 
 class ReadAddress(object):
 
@@ -43,8 +42,7 @@ class ReadAddress(object):
         s_imm = self.sign_extend(imm)
         sh = (num >> 6) & 0x1F
         jump = num & 0x3FFFFFF
-        offset = (num & 0xFFFF)
-        return Fields(s, t, d, imm, s_imm, sh, jump, offset)
+        return Fields(s, t, d, imm, s_imm, sh, jump)
 
 
 

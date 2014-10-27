@@ -6,6 +6,7 @@ class Syscall:
 
     a0 = 4
     v0 = 2
+    gp = 28
 
     def __init__(self, regs, mem):
         self.regs = regs
@@ -24,34 +25,49 @@ class Syscall:
         return chr(num & 0xFF)
 
     def print_integer(self):
-        print str(self.regs.get_value_for_register(self.a0))
+        sys.stdout.write(str(int(self.regs.get_value_for_register(self.a0))))
 
     def read_integer(self):
-        x = raw_input("Syscall Read Integer: ")
+        x = raw_input("")
         self.regs.set_value_for_register(self.v0, int(x))
 
     def print_string(self):
         addr = self.regs.get_value_for_register(self.a0)
-
         val = self.mem.get_val_in_address(addr)
+
         counter = 0
         out = ""
 
-        while(val != 0):
-            out += self.get_ch1(val)
-            out += self.get_ch2(val)
-            out += self.get_ch3(val)
-            out += self.get_ch4(val)
+        mod = addr % 4
+        nullchar = chr(0)
+        while True:
+            if mod <= 0:
+                c = self.get_ch1(val)
+                if c == nullchar: break
+                sys.stdout.write(str(c))
+
+            if mod <= 1:
+                c = self.get_ch2(val)
+                if c == nullchar: break
+                sys.stdout.write(str(c))
+
+            if mod <= 2:
+                c = self.get_ch3(val)
+                if c == nullchar: break
+                sys.stdout.write(str(c))
+
+            c = self.get_ch4(val)
+            if c == nullchar: break
+            sys.stdout.write(str(c))
+
+            mod = 0
             counter += 4
             val = self.mem.get_val_in_address(addr + counter)
 
-        print out
-
-
-    def read_sring(self):
+    def read_string(self):
         sl = []
         s = ""
-        r_str = raw_input("Sycall read String: ")
+        r_str = raw_input("")
         arr = [ord(c) for c in r_str]
         for i  in range(0, len(arr), 1):
             s = hex(arr[i])[2:] + s
@@ -65,6 +81,17 @@ class Syscall:
             self.mem.set_val_to_address(self.regs.get_value_for_register(self.a0) + counter, b)
             counter += 4
 
+    # Allocates bytes based on $a0=$4, returns address in $v0=$2
+    # Makes a stack based allocator but do not deallocate
+    # data_segment = GP
+    # sets the value of the $v0 to be the GP
+    # sets GP = GP + a0
+    # returns v0
+    def allocate_memory(self):
+        self.regs.set_value_for_register(self.v0, self.regs.get_value_for_register(self.gp))
+        self.regs.set_value_for_register(self.gp, self.regs.get_value_for_register(self.gp) + self.regs.get_value_for_register(self.a0))
+        return self.regs.get_value_for_register(self.v0)
+
     def sys_exit(self):
         sys.exit(0)
 
@@ -72,6 +99,7 @@ class Syscall:
         1: print_integer,
         4: print_string,
         5: read_integer,
-        8: read_sring,
-        10: sys_exit
+        8: read_string,
+        9: allocate_memory,
+        10: sys_exit,
     }
