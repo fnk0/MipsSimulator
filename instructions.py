@@ -50,7 +50,7 @@ class Instruction(object):
         self._add(f)
 
     def _addiu(self, f): #$t = $s + imm; advance_pc (4);
-        self.regs.set_value_for_register(f.t, self.regs.generalPurposes[f.s] + f.imm)
+        self.regs.set_value_for_register(f.t, int(self.regs.generalPurposes[f.s] + f.s_imm))
         self.regs.advance_pc()
 
     def _and(self, f): #$d = $s & $t; advance_pc (4);
@@ -198,7 +198,9 @@ class Instruction(object):
         self._sub(f)
 
     def _sw(self, f): #MEM[$s + offset] = $t; advance_pc (4);
-        self.mem.set_val_to_address(self.regs.generalPurposes[f.s] + f.s_imm, self.regs.generalPurposes[f.t])
+        temp = (self.regs.generalPurposes[f.s] + f.s_imm)
+        temp2 = self.regs.generalPurposes[f.t]
+        self.mem.set_val_to_address(temp2, temp)
         self.regs.advance_pc()
 
     def _xor(self, f): #$d = $s ^ $t; advance_pc (4);
@@ -206,7 +208,7 @@ class Instruction(object):
         self.regs.advance_pc()
 
     def _xori(self, f): #$t = $s ^ imm; advance_pc (4);
-        self.regs.set_value_for_register(f.t, self.regs.generalPurposes[f.s] ^ self.regs.generalPurposes[f.imm])
+        self.regs.set_value_for_register(f.t, self.regs.generalPurposes[f.s] ^ f.imm)
         self.regs.advance_pc()
 
     def _syscall(self, f):

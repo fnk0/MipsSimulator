@@ -1,5 +1,7 @@
 __author__ = 'marcus'
 
+import ctypes
+
 class Fields(object):
 
     def __init__(self, s, t, d, imm, s_imm, sh, jump):
@@ -32,7 +34,10 @@ class ReadAddress(object):
         return num & 0b11111100000111110000000000000000
 
     def sign_extend(self, val):
-        return (val | 0xFFFF0000) if (val & 0x8000 != 0) else val
+        return int(val | 0xFFFF0000) - 2**32 if (val & 0x8000 != 0) else val
+
+    def int32_to_uint32(self, i):
+        return ctypes.c_uint32(i).value
 
     def get_fields(self, num):
         s = (num >> 21) & 0x1F

@@ -34,30 +34,26 @@ class Syscall:
     def print_string(self):
         addr = self.regs.get_value_for_register(self.a0)
         val = self.mem.get_val_in_address(addr)
-
         counter = 0
-        out = ""
-
         mod = addr % 4
-        nullchar = chr(0)
         while True:
             if mod <= 0:
                 c = self.get_ch1(val)
-                if c == nullchar: break
+                if c == chr(0): break
                 sys.stdout.write(str(c))
 
             if mod <= 1:
                 c = self.get_ch2(val)
-                if c == nullchar: break
+                if c == chr(0): break
                 sys.stdout.write(str(c))
 
             if mod <= 2:
                 c = self.get_ch3(val)
-                if c == nullchar: break
+                if c == chr(0): break
                 sys.stdout.write(str(c))
 
             c = self.get_ch4(val)
-            if c == nullchar: break
+            if c == chr(0): break
             sys.stdout.write(str(c))
 
             mod = 0
