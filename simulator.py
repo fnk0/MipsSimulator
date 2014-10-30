@@ -2,7 +2,6 @@
 __author__ = 'marcus'
 
 import sys, re
-import string
 from base import Memory
 from process import FileProcess
 from instructions import Instruction
@@ -32,7 +31,7 @@ if __name__ == "__main__":
     else:
         usage()
 
-    lines = [line.rstrip() for line in open(sys.argv[2])]
+    lines = [line.strip() for line in open(sys.argv[2])]
     for l in lines:
         if not l:
             continue

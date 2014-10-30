@@ -33,7 +33,7 @@ ins.execute()
 get char from string = num % 16^2
 
 imm = inst & 0xFFFF
-se_imm = (imm & 0x8000 != 0) ? imm : ( imm | 0xFFFF0000)
+se_imm = (imm & 0x8000 != 0) ? ( imm | 0xFFFF0000) : imm 
    
 ```
 

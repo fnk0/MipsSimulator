@@ -7,12 +7,10 @@ class FileProcess(object):
     IS_PC = 0
     IS_MEM = 1
     IS_REG = 2
-
     mem = Memory()
 
     def __init__(self, mem):
         self.mem = mem
-        """ :type : Memory """
 
     def processLine(self, line):
         if line[0] is ('#'): # if starts with a pound symbol is a comment line and we ignore
@@ -21,7 +19,6 @@ class FileProcess(object):
             return line[0].translate(None, "[]") # get the memory address on the first value of the input file
 
     def getRealAddress(self, location):
-        # print location
         try:
             return (int(location, 16), self.IS_MEM) # see if it's a hex address
         except:
@@ -31,8 +28,6 @@ class FileProcess(object):
                 return (self.mem.get_register_num(location), self.IS_REG)
 
     def process(self, file):
-        # print len(mem.mem) # debug Only check the size of the array
-
         for line in file:
             location = self.processLine(line)
             if location is "#":

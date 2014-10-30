@@ -15,9 +15,6 @@ class Fields(object):
 
 class ReadAddress(object):
 
-    def __init__(self):
-        pass
-
     def applyMaskRegister(self, num):
         return num & 0b11111100000000000000011111111111
 

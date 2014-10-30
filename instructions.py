@@ -34,7 +34,6 @@ class Instruction(object):
 
         return self.instructions[ins]
 
-
     def get_memory(self):
         return self.mem
 
