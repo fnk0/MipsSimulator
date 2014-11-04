@@ -45,8 +45,3 @@ class ReadAddress(object):
         sh = (num >> 6) & 0x1F
         jump = num & 0x3FFFFFF
         return Fields(s, t, d, imm, s_imm, sh, jump)
-
-
-
-
-
